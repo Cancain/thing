@@ -3,6 +3,7 @@
 #include "window.h"
 #include "dot.h"
 #include "inputHandler.h"
+#include "gameplay.h"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -25,40 +26,19 @@ int main()
         return 1;
     }
 
-    // Create a test dot
-    SDL_Color dotColor = {255, 0, 0, 255}; // Red
-    Dot dot(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 20, dotColor);
-
-    bool running = true;
+    // Create gameplay manager
+    Gameplay gameplay(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Create input handler
     InputHandler inputHandler;
 
-    // Set up callbacks
-    inputHandler.onEscapeDown([&running]()
-                              {
-                                std::cout << "Escape key pressed" << std::endl;
-                                running = false; });
-
-    inputHandler.onSpaceDown([&dot]()
-                             {
-                                std::cout << "Space key pressed" << std::endl;
-                                dot.setColor({0, 255, 0, 255}); });
-
-    inputHandler.onLeftClick([&dot](int x, int y)
-                             {
-                                std::cout << "Left click at " << x << ", " << y << std::endl;
-                                dot.setPosition(x, y); });
-
-    inputHandler.onQuit([&running]()
-                        {
-                            std::cout << "Quit event received" << std::endl;
-                            running = false; });
+    // Set up gameplay input callbacks
+    gameplay.setupInputCallbacks(inputHandler);
     Uint32 frameStart;
     int frameTime;
 
     // Game loop
-    while (running)
+    while (gameplay.isRunning())
     {
         frameStart = SDL_GetTicks();
 
@@ -66,11 +46,11 @@ int main()
         inputHandler.pollEvents();
 
         // Update game state
-        dot.update();
+        gameplay.update();
 
         // Render
         window.renderBackground(0, 0, 0); // Black background
-        dot.draw(window.getRenderer());
+        gameplay.render(window.getRenderer());
         window.present();
 
         // Frame rate limiting
