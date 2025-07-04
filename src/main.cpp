@@ -26,34 +26,28 @@ int main()
         return 1;
     }
 
-    // Create gameplay manager
     Gameplay gameplay(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    // Create input handler
     InputHandler inputHandler;
 
-    // Set up gameplay input callbacks
     gameplay.setupInputCallbacks(inputHandler);
     Uint32 frameStart;
     int frameTime;
 
-    // Game loop
     while (gameplay.isRunning())
     {
         frameStart = SDL_GetTicks();
 
-        // Handle events
         inputHandler.pollEvents();
 
-        // Update game state
         gameplay.update();
 
-        // Render
-        window.renderBackground(0, 0, 0); // Black background
+        window.renderBackground(0, 0, 0);
         gameplay.render(window.getRenderer());
         window.present();
 
-        // Frame rate limiting
+        gameplay.drawGrid(window.getRenderer());
+
         frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < FRAME_DELAY)
         {

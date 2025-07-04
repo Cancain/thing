@@ -9,13 +9,12 @@ Dot::Dot(int x, int y, int radius, SDL_Color color)
 
 void Dot::draw(SDL_Renderer *renderer)
 {
-    // Simple filled circle drawing (not anti-aliased)
     for (int w = 0; w < m_radius * 2; w++)
     {
         for (int h = 0; h < m_radius * 2; h++)
         {
-            int dx = m_radius - w; // horizontal offset
-            int dy = m_radius - h; // vertical offset
+            int dx = m_radius - w;
+            int dy = m_radius - h;
             if ((dx * dx + dy * dy) <= (m_radius * m_radius))
             {
                 SDL_SetRenderDrawColor(renderer, m_color.r, m_color.g, m_color.b, m_color.a);
@@ -27,7 +26,6 @@ void Dot::draw(SDL_Renderer *renderer)
 
 void Dot::update()
 {
-    // Placeholder for logic (e.g., movement, animation)
 }
 
 void Dot::setPosition(int x, int y)

@@ -49,7 +49,7 @@ int Window::create()
 
 void Window::renderBackground()
 {
-    renderBackground(255, 255, 255, 255); // Default white background
+    renderBackground(255, 255, 255, 255);
 }
 
 void Window::renderBackground(int r, int g, int b, int a)

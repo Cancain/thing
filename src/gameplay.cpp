@@ -2,9 +2,10 @@
 #include <iostream>
 #include <algorithm>
 #include <climits>
+#include <cstdlib>
 
 Gameplay::Gameplay(int windowWidth, int windowHeight)
-    : m_running(false), m_paused(false), m_windowWidth(windowWidth), m_windowHeight(windowHeight), m_score(0), m_frameCount(0)
+    : m_running(false), m_paused(false), m_windowWidth(windowWidth), m_windowHeight(windowHeight), m_score(0), m_frameCount(0), m_grid(std::make_unique<Grid>(windowWidth, windowHeight))
 {
     initializeGame();
 }
@@ -18,13 +19,8 @@ void Gameplay::initializeGame()
 {
     std::cout << "Initializing game..." << std::endl;
 
-    // Add some initial dots
-    addDot(m_windowWidth / 2, m_windowHeight / 2, 20, {255, 0, 0, 255}); // Red dot in center
-    addDot(100, 100, 15, {0, 255, 0, 255});                              // Green dot
-    addDot(m_windowWidth - 100, 100, 15, {0, 0, 255, 255});              // Blue dot
-
     m_running = true;
-    std::cout << "Game initialized with " << m_dots.size() << " dots" << std::endl;
+    std::cout << "Game initialized with grid dots" << std::endl;
 }
 
 void Gameplay::cleanupGame()
@@ -55,7 +51,8 @@ void Gameplay::render(SDL_Renderer *renderer)
         return;
     }
 
-    // Render all dots
+    drawGrid(renderer);
+
     for (auto &dot : m_dots)
     {
         dot->draw(renderer);
@@ -64,7 +61,6 @@ void Gameplay::render(SDL_Renderer *renderer)
 
 void Gameplay::setupInputCallbacks(InputHandler &inputHandler)
 {
-    // Set up all input callbacks
     inputHandler.onEscapeDown([this]()
                               { onEscapePressed(); });
     inputHandler.onSpaceDown([this]()
@@ -145,12 +141,10 @@ void Gameplay::updateEntities()
 
 void Gameplay::checkCollisions()
 {
-    // Simple collision detection between dots
     for (size_t i = 0; i < m_dots.size(); ++i)
     {
         for (size_t j = i + 1; j < m_dots.size(); ++j)
         {
-            // Calculate distance between dot centers
             int dx = m_dots[i]->getX() - m_dots[j]->getX();
             int dy = m_dots[i]->getY() - m_dots[j]->getY();
             int distanceSquared = dx * dx + dy * dy;
@@ -160,7 +154,6 @@ void Gameplay::checkCollisions()
 
             if (distanceSquared <= radiusSumSquared)
             {
-                // Collision detected!
                 std::cout << "Collision detected between dots " << i << " and " << j << std::endl;
                 m_score += 10;
             }
@@ -170,9 +163,8 @@ void Gameplay::checkCollisions()
 
 void Gameplay::updateGameState()
 {
-    // Update game statistics
     if (m_frameCount % 60 == 0)
-    { // Every second at 60 FPS
+    {
         std::cout << "Score: " << m_score << ", Dots: " << m_dots.size() << std::endl;
     }
 }
@@ -212,7 +204,6 @@ void Gameplay::onRightClick(int x, int y)
     std::cout << "Right click at (" << x << ", " << y << ") - removing nearest dot" << std::endl;
     if (!m_dots.empty())
     {
-        // Find the dot closest to the click
         size_t nearestIndex = 0;
         int minDistance = INT_MAX;
 
@@ -237,4 +228,37 @@ void Gameplay::onQuitRequested()
 {
     std::cout << "Quit requested - stopping game" << std::endl;
     stop();
+}
+
+void Gameplay::drawGrid(SDL_Renderer *renderer)
+{
+    if (m_grid)
+    {
+        m_grid->draw(renderer);
+    }
+}
+
+void Gameplay::addDotToGrid(int row, int col, int radius, SDL_Color color)
+{
+    if (m_grid)
+    {
+        auto dot = std::make_unique<Dot>(0, 0, radius, color);
+        m_grid->setCell(row, col, std::move(dot));
+    }
+}
+
+void Gameplay::removeDotFromGrid(int row, int col)
+{
+    if (m_grid)
+    {
+        m_grid->clearCell(row, col);
+    }
+}
+
+void Gameplay::clearGrid()
+{
+    if (m_grid)
+    {
+        m_grid->clearAllCells();
+    }
 }

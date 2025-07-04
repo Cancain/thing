@@ -14,7 +14,6 @@ public:
     void setRadius(int radius);
     void setColor(SDL_Color color);
 
-    // Getters
     int getX() const { return m_x; }
     int getY() const { return m_y; }
     int getRadius() const { return m_radius; }
@@ -27,5 +26,4 @@ private:
     SDL_Color m_color;
     SDL_Point m_position;
 };
-
 #endif

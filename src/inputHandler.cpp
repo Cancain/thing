@@ -158,8 +158,8 @@ void InputHandler::handleMouseDown(int button, int x, int y)
 
 void InputHandler::handleMouseUp(int button, int x, int y)
 {
-    (void)x; // Suppress unused parameter warning
-    (void)y; // Suppress unused parameter warning
+    (void)x;
+    (void)y;
     m_mouseButtonStates[button] = false;
 }
 
